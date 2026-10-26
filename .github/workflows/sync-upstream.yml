@@ -2,22 +2,24 @@ name: Sync with upstream
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # кожні 6 годин
-  workflow_dispatch:         # кнопка "Run workflow" вручну
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync fork
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.WORKFLOW_TOKEN }}   # див. примітку нижче
+
+      - name: Sync
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git clone "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" repo
-          cd repo
           git remote add upstream https://github.com/mbentley/docker-timemachine.git
           git fetch upstream
-          git checkout main
-          # reset до upstream: у форку ви ніколи не мите своїх комітів — так найпростіше і надійніше
-          git reset --hard upstream/main
-          git push --force origin main
+          git reset --hard upstream/master
+          git push --force origin HEAD
