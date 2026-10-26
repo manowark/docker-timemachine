@@ -1,5 +1,6 @@
 # rebased/repackaged base image that only updates existing packages
-FROM mbentley/alpine:latest
+#FROM mbentley/alpine:latest
+FROM docker.io/alpine:latest
 LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
 
 # install samba and s6; create supporting directories
