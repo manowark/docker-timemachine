@@ -50,6 +50,6 @@ jobs:
           platforms: linux/arm/v7
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/timemachine:latest
-            ghcr.io/${{ github.repository_owner }}/timemachine:smb
-            ghcr.io/${{ github.repository_owner }}/timemachine:smb-${{ steps.date.outputs.date }}
+            ghcr.io/${{ github.repository_owner }}/timemachine:latest-armv7
+            ghcr.io/${{ github.repository_owner }}/timemachine:smb-armv7
+            ghcr.io/${{ github.repository_owner }}/timemachine:smb-${{ steps.date.outputs.date }}-armv7
