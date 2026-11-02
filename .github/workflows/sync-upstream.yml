@@ -2,7 +2,7 @@ name: Sync with upstream
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 0 */7 * *"
   workflow_dispatch:
 
 permissions:
@@ -14,12 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: master
           fetch-depth: 0
-          token: ${{ secrets.WORKFLOW_TOKEN }}   # див. примітку нижче
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      - name: Sync
+      - name: Merge upstream
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "fork-sync@users.noreply.github.com"
+
           git remote add upstream https://github.com/mbentley/docker-timemachine.git
           git fetch upstream
-          git reset --hard upstream/master
-          git push --force origin HEAD
+
+          # merge, а не reset --hard: ваші файли (.github/workflows) лишаються на місці
+          git merge --no-edit upstream/master
+
+          # пуш спрацює, лише якщо merge приніс нові коміти
+          git push origin master
