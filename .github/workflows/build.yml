@@ -1,6 +1,8 @@
 name: Build armv7 image
 
 on:
+  schedule:
+    - cron: "0 3 * * *"        # щодня о 03:00 UTC (= 05:00 за Києвом)
   push:
     branches: [master]
   workflow_run:
@@ -20,12 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Upstream version tag
-        id: ver
-        run: |
-          VER=$(curl -s https://api.github.com/repos/mbentley/docker-timemachine/releases/latest \
-            | jq -r '.tag_name // empty')
-          echo "tag=${VER:-latest}" >> "$GITHUB_OUTPUT"
+      # дата збірки в UTC — саме так mbentley формує свої теги
+      - name: Build date tag
+        id: date
+        run: echo "date=$(TZ=UTC date +%Y%m%d)" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -50,5 +50,6 @@ jobs:
           platforms: linux/arm/v7
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/timemachine:latest-armv7
-            ghcr.io/${{ github.repository_owner }}/timemachine:smb-${{ steps.ver.outputs.tag }}-armv7
+            ghcr.io/${{ github.repository_owner }}/timemachine:latest
+            ghcr.io/${{ github.repository_owner }}/timemachine:smb
+            ghcr.io/${{ github.repository_owner }}/timemachine:smb-${{ steps.date.outputs.date }}
